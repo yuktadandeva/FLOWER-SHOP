@@ -1,28 +1,41 @@
 import { getFlowers } from "./api.js";
+import cartOperations from "./cart-service.js";
 
 window.addEventListener('load', displayFlowers);
 
-function displayFlowers(){
+async function displayFlowers(){
     
     document.querySelector('#message').innerText = 'Loading';
+    
+    try{
+    const response = await getFlowers();
+    const obj = await response.json();
 
-    const promise = getFlowers();
+    document.querySelector('#message').innerText = '';
 
-    promise.then(function(response){
-        document.querySelector('#message').innerText = '';
-        const p = response.json();
-        p.then(function(obj){
-            console.log('Data is :',  obj['flowerlist']);
-            printFlowers(obj['flowerlist']);
-
-        }).catch(function(err){
-           console.log( 'INVALID JSON', err);
-        })
+    console.log('Data is :',  obj['flowerlist']);
+    printFlowers(obj['flowerlist']);
+   
+    }catch(err){
+        throw err;
+    }
 
 
-    }).catch(function(e){
-        document.querySelector('#message').innerText = 'ERROR IN SERVER NO FLOWERS FETCHED';
-    })
+    // promise.then(function(response){
+    //     document.querySelector('#message').innerText = '';
+    //     const p = response.json();
+    //     p.then(function(obj){
+    //         console.log('Data is :',  obj['flowerlist']);
+    //         printFlowers(obj['flowerlist']);
+
+    //     }).catch(function(err){
+    //        console.log( 'INVALID JSON', err);
+    //     })
+
+
+    // }).catch(function(e){
+    //     document.querySelector('#message').innerText = 'ERROR IN SERVER NO FLOWERS FETCHED';
+    // })
 }
 
 function printFlowers(flowers){
@@ -33,6 +46,13 @@ function printFlowers(flowers){
     createFlowerCard(flower);
   }
 //   document.querySelector('#flowers').innerHTML = allHtml;
+}
+
+function addToCart(){
+
+    const flowers = this.getAttribute('flower-id');
+    cartOperations.addToCart(flowers);
+    console.log('ADD TO CART', flowers);
 }
 
 function createFlowerCard(singleFlower){
@@ -50,22 +70,23 @@ function createFlowerCard(singleFlower){
 
     const divTag = document.createElement('div');
     divTag.className = 'card';
-    divTag.style.width = '18rem';
+    divTag.style.width = '16rem';
+    divTag.style.margin = '20px';
 
     const cardBody = document.createElement('div');
     cardBody.className = 'card-body';
     
     const h5 = document.createElement('h5');
     h5.className = 'card-title';
-    h5.innerText = 'card-title';
+    h5.innerText = singleFlower.name;
 
     const imgTag = document.createElement('img');
     imgTag.src = singleFlower.photo;
     imgTag.className = 'card-body-top';
     
-    const p = document.createElement('p');
-    p.className = 'card-text';
-    p.innerText = singleFlower.name;
+    // const p = document.createElement('p');
+    // p.className = 'card-text';
+    // p.innerText = singleFlower.name;
 
     const p2 = document.createElement('p');
     p2.className = 'card-text';
@@ -73,13 +94,20 @@ function createFlowerCard(singleFlower){
 
     const p3 = document.createElement('p');
     p3.className = 'card-text';
-    p3.innerText = singleFlower.price;
+    p3.innerText =  singleFlower.price;
+
+    const btn = document.createElement('button');
+    btn.className = 'btn-btn-primary';
+    btn.innerText = 'ADD TO CART';
+    btn.setAttribute('flower-id', singleFlower.productId)
+    btn.addEventListener('click', addToCart);
 
     cardBody.appendChild(h5);
     cardBody.appendChild(imgTag);
-    cardBody.appendChild(p);
+    // cardBody.appendChild(p);
     cardBody.appendChild(p2);
     cardBody.appendChild(p3);
+    cardBody.appendChild(btn);
 
     mainDiv.appendChild(divTag);
     divTag.appendChild(cardBody);
