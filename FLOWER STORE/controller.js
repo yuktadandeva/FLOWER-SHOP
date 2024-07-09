@@ -39,6 +39,8 @@ async function displayFlowers(){
 }
 
 function printFlowers(flowers){
+
+  cartOperations.flowers = flowers;
 //   var allHtml;
   for(let flower of flowers){
     console.log(flower,flowers);
@@ -50,9 +52,45 @@ function printFlowers(flowers){
 
 function addToCart(){
 
-    const flowers = this.getAttribute('flower-id');
-    cartOperations.addToCart(flowers);
-    console.log('ADD TO CART', flowers);
+    const flowerId = this.getAttribute('flower-id');
+    cartOperations.addToCart(flowerId);
+    console.log('ADD TO CART', flowerId);
+
+    printCart();
+}
+
+function printCart(){
+   const flowersInCart = cartOperations.viewAll();
+
+   if(flowersInCart==0){
+    const btn = document.querySelector(".pay");
+    btn.disabled = true;
+   }
+
+   document.querySelector(".cart").innerHTML ='';
+   flowersInCart.forEach(flower => printCartItem(flower));
+   
+   totalBill(flowersInCart);
+
+}
+
+function printCartItem(flower){
+  const Cart = document.querySelector(".cart");
+
+  const p = document.createElement('p');
+  p.innerText = flower.name +" $"+ flower.price;
+  
+  Cart.appendChild(p);
+}
+
+function totalBill(flowers){
+  const total = flowers.reduce((acc,flower)=> acc+ parseFloat(flower.price),0).toFixed(2);
+
+  document.querySelector(".total").innerHTML = '';
+
+  const p = document.createElement('p');
+  p.innerText = "TOTAL BILL: " + total;
+  document.querySelector(".total").appendChild(p);
 }
 
 function createFlowerCard(singleFlower){
@@ -100,6 +138,7 @@ function createFlowerCard(singleFlower){
     btn.className = 'btn-btn-primary';
     btn.innerText = 'ADD TO CART';
     btn.setAttribute('flower-id', singleFlower.productId)
+    console.log(singleFlower.productId);
     btn.addEventListener('click', addToCart);
 
     cardBody.appendChild(h5);
