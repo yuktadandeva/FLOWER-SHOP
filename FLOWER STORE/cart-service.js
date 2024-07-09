@@ -1,10 +1,10 @@
 const cartOperations = {
 
     flowers: [],
-    addToCart(){
+    addToCart(flowerId){
 
-        const phool = this.flowers.find(phool => phool.productId == flower-id);
-        phool.isInCart = 'true';
+        const flower = this.flowers.find(phool => phool.productId == flowerId);
+        flower.isInCart = 'true';
 
         console.log(this.flowers);
 
@@ -15,7 +15,7 @@ const cartOperations = {
     },
 
     viewAll(){
-
+      return this.flowers.filter(phool => phool.isInCart);
     },
 
     total(){
