@@ -1,7 +1,7 @@
 import { getFlowers } from "./api.js";
 import cartOperations from "./cart-service.js";
 
-window.addEventListener('load', displayFlowers);
+window.addEventListener('DOMContentLoaded', displayFlowers);
 
 async function displayFlowers(){
     
@@ -75,13 +75,55 @@ function printCart(){
 }
 
 function printCartItem(flower){
-  const Cart = document.querySelector(".cart");
+ 
+
+  const cartItem = document.createElement('div');
+  cartItem.setAttribute('flower-id',flower.productId);
 
   const p = document.createElement('p');
   p.innerText = flower.name +" $"+ flower.price;
+
+  const add = document.createElement('button');
+  add.className = 'btn btn-secondary';
+  add.innerText = '+';
+  add.style.margin = '10px';
+  add.setAttribute('flower-id',flower.productId);
+
+
+  const sub = document.createElement('button');
+  sub.className = 'btn btn-secondary';
+  sub.innerText = '-';
+  sub.style.margin = '10px';
+  sub.setAttribute('flower-id',flower.productId);
+
+
+  const remove = document.createElement('button');
+  remove.className = 'btn btn-primary';
+  remove.innerText = 'remove';
+  remove.setAttribute('flower-id', flower.productId);
+  remove.addEventListener('click', removeCartItem);
+
+
+  const cart = document.querySelector('.cart');
+
+  cart.appendChild(cartItem);
+
+  cartItem.appendChild(p);
+  cartItem.appendChild(add);
+  cartItem.appendChild(sub);
+  cartItem.appendChild(remove);
+
   
-  Cart.appendChild(p);
 }
+
+function removeCartItem(){
+  const id = this.getAttribute('flower-id');
+  cartOperations.removeFromCart(id);
+
+  printCart();
+  console.log('remove');
+}
+
 
 function totalBill(flowers){
   const total = flowers.reduce((acc,flower)=> acc+ parseFloat(flower.price),0).toFixed(2);
@@ -90,6 +132,7 @@ function totalBill(flowers){
 
   const p = document.createElement('p');
   p.innerText = "TOTAL BILL: " + total;
+  
   document.querySelector(".total").appendChild(p);
 }
 
